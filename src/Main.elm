@@ -73,49 +73,59 @@ update : Msg -> Model -> Model
 update msg model =
     case model.editComment of
         Just editComment ->
-            case msg of
-                AddComment ->
-                    { model
-                        | editComment = Nothing
-                        , comments = model.comments ++ [ editComment ]
-                    }
-
-                CancelEdit ->
-                    { model | editComment = Nothing }
-
-                EditAuthor newAuthor ->
-                    { model
-                        | editComment =
-                            Just
-                                { editComment
-                                    | author = newAuthor
-                                }
-                    }
-
-                EditMessage newMessage ->
-                    { model
-                        | editComment =
-                            Just
-                                { editComment
-                                    | message = newMessage
-                                }
-                    }
+            updateEditComment msg model editComment
 
         Nothing ->
-            case msg of
-                AddComment ->
-                    { model
-                        | editComment = Just { author = "", message = "" }
-                    }
+            updateIdle msg model
 
-                CancelEdit ->
-                    model
 
-                EditAuthor newAuthor ->
-                    model
+updateEditComment : Msg -> Model -> Comment -> Model
+updateEditComment msg model editComment =
+    case msg of
+        AddComment ->
+            { model
+                | editComment = Nothing
+                , comments = model.comments ++ [ editComment ]
+            }
 
-                EditMessage newMessage ->
-                    model
+        CancelEdit ->
+            { model | editComment = Nothing }
+
+        EditAuthor newAuthor ->
+            { model
+                | editComment =
+                    Just
+                        { editComment
+                            | author = newAuthor
+                        }
+            }
+
+        EditMessage newMessage ->
+            { model
+                | editComment =
+                    Just
+                        { editComment
+                            | message = newMessage
+                        }
+            }
+
+
+updateIdle : Msg -> Model -> Model
+updateIdle msg model =
+    case msg of
+        AddComment ->
+            { model
+                | editComment = Just { author = "", message = "" }
+            }
+
+        CancelEdit ->
+            model
+
+        EditAuthor newAuthor ->
+            model
+
+        EditMessage newMessage ->
+            model
 
 
 
@@ -184,15 +194,15 @@ viewAddComment attributes model =
     el [ Element.paddingXY 0 16 ]
         (case model.editComment of
             Just comment ->
-                editCommentSection attributes comment
+                editCommentPanel attributes comment
 
             Nothing ->
                 addCommentButton attributes
         )
 
 
-editCommentSection : List (Attribute Msg) -> Comment -> Element Msg
-editCommentSection attributes comment =
+editCommentPanel : List (Attribute Msg) -> Comment -> Element Msg
+editCommentPanel attributes comment =
     column
         [ Element.width fill
         , Border.width 1
