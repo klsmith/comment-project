@@ -4453,65 +4453,73 @@ var elm$core$Basics$append = _Utils_append;
 var elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
 };
+var author$project$Main$updateEditComment = F3(
+	function (msg, model, editComment) {
+		switch (msg.$) {
+			case 'AddComment':
+				return _Utils_update(
+					model,
+					{
+						comments: _Utils_ap(
+							model.comments,
+							_List_fromArray(
+								[editComment])),
+						editComment: elm$core$Maybe$Nothing
+					});
+			case 'CancelEdit':
+				return _Utils_update(
+					model,
+					{editComment: elm$core$Maybe$Nothing});
+			case 'EditAuthor':
+				var newAuthor = msg.a;
+				return _Utils_update(
+					model,
+					{
+						editComment: elm$core$Maybe$Just(
+							_Utils_update(
+								editComment,
+								{author: newAuthor}))
+					});
+			default:
+				var newMessage = msg.a;
+				return _Utils_update(
+					model,
+					{
+						editComment: elm$core$Maybe$Just(
+							_Utils_update(
+								editComment,
+								{message: newMessage}))
+					});
+		}
+	});
+var author$project$Main$updateIdle = F2(
+	function (msg, model) {
+		switch (msg.$) {
+			case 'AddComment':
+				return _Utils_update(
+					model,
+					{
+						editComment: elm$core$Maybe$Just(
+							{author: '', message: ''})
+					});
+			case 'CancelEdit':
+				return model;
+			case 'EditAuthor':
+				var newAuthor = msg.a;
+				return model;
+			default:
+				var newMessage = msg.a;
+				return model;
+		}
+	});
 var author$project$Main$update = F2(
 	function (msg, model) {
 		var _n0 = model.editComment;
 		if (_n0.$ === 'Just') {
 			var editComment = _n0.a;
-			switch (msg.$) {
-				case 'AddComment':
-					return _Utils_update(
-						model,
-						{
-							comments: _Utils_ap(
-								model.comments,
-								_List_fromArray(
-									[editComment])),
-							editComment: elm$core$Maybe$Nothing
-						});
-				case 'CancelEdit':
-					return _Utils_update(
-						model,
-						{editComment: elm$core$Maybe$Nothing});
-				case 'EditAuthor':
-					var newAuthor = msg.a;
-					return _Utils_update(
-						model,
-						{
-							editComment: elm$core$Maybe$Just(
-								_Utils_update(
-									editComment,
-									{author: newAuthor}))
-						});
-				default:
-					var newMessage = msg.a;
-					return _Utils_update(
-						model,
-						{
-							editComment: elm$core$Maybe$Just(
-								_Utils_update(
-									editComment,
-									{message: newMessage}))
-						});
-			}
+			return A3(author$project$Main$updateEditComment, msg, model, editComment);
 		} else {
-			switch (msg.$) {
-				case 'AddComment':
-					return _Utils_update(
-						model,
-						{
-							editComment: elm$core$Maybe$Just(
-								{author: '', message: ''})
-						});
-				case 'CancelEdit':
-					return model;
-				case 'EditAuthor':
-					var newAuthor = msg.a;
-					return model;
-				default:
-					var newMessage = msg.a;
-					return model;
-			}
+			return A2(author$project$Main$updateIdle, msg, model);
 		}
 	});
 var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
@@ -11882,7 +11890,7 @@ var mdgriffith$elm_ui$Element$row = F2(
 						attrs))),
 			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
-var author$project$Main$editCommentSection = F2(
+var author$project$Main$editCommentPanel = F2(
 	function (attributes, comment) {
 		return A2(
 			mdgriffith$elm_ui$Element$column,
@@ -11931,7 +11939,7 @@ var author$project$Main$viewAddComment = F2(
 				var _n0 = model.editComment;
 				if (_n0.$ === 'Just') {
 					var comment = _n0.a;
-					return A2(author$project$Main$editCommentSection, attributes, comment);
+					return A2(author$project$Main$editCommentPanel, attributes, comment);
 				} else {
 					return author$project$Main$addCommentButton(attributes);
 				}
